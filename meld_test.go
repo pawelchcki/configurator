@@ -12,26 +12,26 @@ func init() {
 	log.SetFlags(0)
 }
 
-type SubSubConfig struct {
+type subSubConfig struct {
 	Str    string
 	StrArr []string
 }
 
-type SubConfig struct {
-	SubSubCfg SubSubConfig
+type subConfig struct {
+	SubSubCfg subSubConfig
 }
 
-type SampleConfig struct {
-	SubCfg SubConfig
+type sampleConfig struct {
+	SubCfg subConfig
 	StrArr []string
 	Dura   time.Duration
 	Str    string
 }
 
-func sampleConfig() SampleConfig {
-	return SampleConfig{
-		SubCfg: SubConfig{
-			SubSubCfg: SubSubConfig{
+func makeSampleConfig() sampleConfig {
+	return sampleConfig{
+		SubCfg: subConfig{
+			SubSubCfg: subSubConfig{
 				Str:    "first",
 				StrArr: []string{"one", "two"},
 			},
@@ -43,19 +43,19 @@ func sampleConfig() SampleConfig {
 }
 
 func TestMeldToEmptyStruct(t *testing.T) {
-	testCfg := SampleConfig{}
-	meldStructs(sampleConfig(), &testCfg)
+	testCfg := sampleConfig{}
+	meldStructs(makeSampleConfig(), &testCfg)
 
-	if !reflect.DeepEqual(testCfg, sampleConfig()) {
-		t.Fatalf("%+v doesn't equal %+v", testCfg, sampleConfig())
+	if !reflect.DeepEqual(testCfg, makeSampleConfig()) {
+		t.Fatalf("%+v doesn't equal %+v", testCfg, makeSampleConfig())
 	}
 }
 
 func TestMeldTwoStructs(t *testing.T) {
-	testCfg := sampleConfig()
-	overCfg := SampleConfig{
-		SubCfg: SubConfig{
-			SubSubCfg: SubSubConfig{
+	testCfg := makeSampleConfig()
+	overCfg := sampleConfig{
+		SubCfg: subConfig{
+			SubSubCfg: subSubConfig{
 				Str:    "second",
 				StrArr: []string{"three", "two"},
 			},
@@ -65,9 +65,9 @@ func TestMeldTwoStructs(t *testing.T) {
 	}
 	meldStructs(overCfg, &testCfg)
 
-	targetCfg := SampleConfig{
-		SubCfg: SubConfig{
-			SubSubCfg: SubSubConfig{
+	targetCfg := sampleConfig{
+		SubCfg: subConfig{
+			SubSubCfg: subSubConfig{
 				Str:    "second",
 				StrArr: []string{"three", "two"},
 			},
@@ -78,6 +78,6 @@ func TestMeldTwoStructs(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(testCfg, targetCfg) {
-		t.Fatalf("%+v doesn't equal %+v", testCfg, sampleConfig())
+		t.Fatalf("%+v doesn't equal %+v", testCfg, makeSampleConfig())
 	}
 }
